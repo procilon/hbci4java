@@ -42,8 +42,14 @@ public final class GVCustomMsg
         addConstraint("msg","msg",null, LogFilter.FILTER_NONE);
 
         addConstraint("my.country","KTV.KIK.country","DE", LogFilter.FILTER_NONE);
-        addConstraint("my.blz","KTV.KIK.blz",null, LogFilter.FILTER_MOST);
-        addConstraint("my.number","KTV.number",null, LogFilter.FILTER_IDS);
+
+        // start procilon
+        // addConstraint("my.blz","KTV.KIK.blz",null, LogFilter.FILTER_MOST);
+        // addConstraint("my.number","KTV.number",null, LogFilter.FILTER_IDS);
+        addConstraint("my.blz","KTV.KIK.blz","", LogFilter.FILTER_MOST);
+        addConstraint("my.number","KTV.number","", LogFilter.FILTER_IDS);
+        // end procilon
+        
         addConstraint("my.subnumber","KTV.subnumber","", LogFilter.FILTER_MOST);
         addConstraint("my.curr","curr","EUR", LogFilter.FILTER_NONE);
         addConstraint("betreff","betreff","", LogFilter.FILTER_NONE);

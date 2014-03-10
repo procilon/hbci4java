@@ -1167,8 +1167,18 @@
         </DEGdef>
         
         <DEGdef id="ParCustomMsg">
-            <DE name="maxlen" type="Num" maxsize="4"/>
+        	<!-- start procilon -->
+            <!-- <DE name="maxlen" type="Num" maxsize="4"/> -->
+            <DE name="maxlen" type="Num" maxsize="5"/>
+            <!-- end procilon -->
         </DEGdef>
+        
+        <!-- start procilon -->
+        <!-- fuer FreeTextOrder -->
+        <!-- <DEGdef id="ParCustomMsgFTO">
+            <DE name="maxlen" type="Num" maxsize="5"/>
+        </DEGdef> -->
+        <!-- end procilon -->
         
         <DEGdef id="ParDauerDel">
             <DE name="minpretime" type="Num" maxsize="4"/>
@@ -2897,6 +2907,49 @@
             <value path="SegHead.code">HIKOMS</value>
             <value path="SegHead.version">4</value>
         </SEGdef>
+        
+        <!-- begin procilon -->
+        <!-- fuer FreeTextOrder -->
+        <!-- <SEGdef id="CustomMsgFTO1">
+            <DEG type="SegHeadUser" name="SegHead"/>
+            <DE name="msg" type="AN" maxsize="20480"/>
+            
+            <value path="SegHead.code">XKKDM</value>
+            <value path="SegHead.version">1</value>
+        </SEGdef>
+        <SEGdef id="CustomMsgFTOPar1">
+            &GVP2;
+            <DEG type="ParCustomMsgFTO"/>
+            
+            &SecClassValids;
+            
+            <value path="SegHead.code">XIKDMS</value>
+            <value path="SegHead.version">1</value>
+        </SEGdef> -->
+        <!-- end procilon -->
+        
+        <!-- start procilon -->
+		<SEGdef id="CustomMsg1"> <!-- 3.0 -->
+            <DEG type="SegHeadUser" name="SegHead"/>
+            <!--  DEG type="KTV3" name="KTV" minnum="0"/ --> <!-- bulzc: loewig_uwe: Das Konto ist optional und kann weggelassen werden, da wir hierfuer auf XML-Daten zurueckgreifen. -->
+            <DE type="AN" name="KTV" minnum="0"/>
+            <DE name="msg" type="AN" maxsize="20480"/> <!-- Bin -->
+            <DE name="betreff" type="AN" maxsize="35" minnum="0"/>
+            <DE name="recpt" type="AN" maxsize="35" minnum="0"/>
+            
+            <value path="SegHead.code">XKKDM</value> <!-- XKKDM / HKVVB-->
+            <value path="SegHead.version">1</value>
+        </SEGdef>
+        <SEGdef id="CustomMsgPar1">
+            &GVP2;
+            <DEG type="ParCustomMsg"/>
+            
+            &SecClassValids;
+            
+            <value path="SegHead.code">XIKDMS</value>
+            <value path="SegHead.version">1</value>
+        </SEGdef>        
+        <!-- end procilon -->
         
         <SEGdef id="CustomMsg2"> <!-- 2.01 -->
             <DEG type="SegHeadUser" name="SegHead"/>
@@ -7123,6 +7176,10 @@
             <SEG type="CommList2" minnum="0"/>
             <SEG type="CommList3" minnum="0"/>
             <SEG type="CommList4" minnum="0"/>
+            <!-- start procilon -->
+            <!-- <SEG type="CustomMsgFTO1" minnum="0"/> -->
+            <SEG type="CustomMsg1" minnum="0"/>
+            <!-- end procilon -->
             <SEG type="CustomMsg2" minnum="0"/>
             <SEG type="CustomMsg3" minnum="0"/>
             <SEG type="CustomMsg4" minnum="0"/>
@@ -7408,6 +7465,10 @@
             <SEG type="CommListPar2" minnum="0"/>
             <SEG type="CommListPar3" minnum="0"/>
             <SEG type="CommListPar4" minnum="0"/>
+            <!-- start procilon -->
+            <!-- <SEG type="CustomMsgFTOPar1" minnum="0"/> -->
+            <SEG type="CustomMsgPar1" minnum="0"/>
+            <!-- end procilon -->
             <SEG type="CustomMsgPar2" minnum="0"/>
             <SEG type="CustomMsgPar3" minnum="0"/>
             <SEG type="CustomMsgPar4" minnum="0"/>
@@ -7704,7 +7765,11 @@
             &MsgSigHeadInst;
             <SEG type="RetGlob"/>
             <SEG type="RetSeg" minnum="0" maxnum="0"/>
-            <SEG type="KeyLockAck"/>
+            <!-- start procilon -->
+            <!-- da kein HISSP Segment vorhanden -->
+            <!-- SEG type="KeyLockAck"/> -->
+            <SEG type="KeyLockAck" minnum="0" maxnum="0"/>
+            <!-- end procilon -->
             &MsgSigTailInst;
         </MSGdef>
 
