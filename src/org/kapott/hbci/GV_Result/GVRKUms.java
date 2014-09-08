@@ -86,9 +86,9 @@ public class GVRKUms
         /** <p>Zusatzinformationen im Rohformat. Wenn Zusatzinformationen zu dieser
             Transaktion in einem unbekannten Format vorliegen, dann enthält dieser
             String diese Daten (u.U. ist dieser String leer, aber nicht <code>null</code>).
-	    Das ist genau dann der Fall, wenn der Wert von  <code>gvcode</code> gleich <code>999</code> ist.</p>
+        Das ist genau dann der Fall, wenn der Wert von  <code>gvcode</code> gleich <code>999</code> ist.</p>
             <p>Wenn die Zusatzinformationen aber ausgewertet werden können (und <code>gvcode!=999</code>),
-	    so ist dieser String <code>null</code>, und die Felder <code>text</code>, <code>primanota</code>,
+        so ist dieser String <code>null</code>, und die Felder <code>text</code>, <code>primanota</code>,
             <code>usage</code>, <code>other</code> und <code>addkey</code>
             enthalten die entsprechenden Werte (siehe auch <code>gvcode</code>)</p> */
         public String   additional;
@@ -116,10 +116,45 @@ public class GVRKUms
         
         /** Gibt an, ob ein Umsatz ein SEPA-Umsatz ist **/
         public boolean isSepa;
+        
+        // Aenderung PROCILON
+        /** End-2-End Parameter **/
+        public List<String> end2EndValue;
+        
+        public List<String> customerReference;
+        
+        public List<String> ultimateDeptor;
+        
+        public List<String> ultimateCreditor;
+        
+        public List<String> purposeCode;
+        
+        public List<String> mandateReference;
+        
+        public List<String> creditorIdentifier;
+
+        public List<String> originatorIdentification;
+
+        public List<String> compensationAmount;
+
+        public List<String> originalAmount;
+        // -- Aenderung PROCILON
 
         public UmsLine()
         {
             usage=new ArrayList<String>();
+            // Anderung PROCILON
+            end2EndValue = new ArrayList<String>();
+            customerReference = new ArrayList<String>();
+            ultimateDeptor = new ArrayList<String>();
+            ultimateCreditor = new ArrayList<String>();
+            purposeCode = new ArrayList<String>();
+            mandateReference = new ArrayList<String>();
+            creditorIdentifier = new ArrayList<String>();
+            originatorIdentification = new ArrayList<String>();
+            compensationAmount = new ArrayList<String>();
+            originalAmount = new ArrayList<String>();
+            // -- Anderung PROCILON
             isSepa=false;
         }
 
@@ -129,6 +164,78 @@ public class GVRKUms
                 usage.add(st);
             }
         }
+        
+        // Anderung PROCILON
+        public void addE2EValue(String st)
+        {
+            if (st!=null) {
+                end2EndValue.add(st);
+            }
+        }
+        
+        public void addCustomerReference(String st)
+        {
+            if (st!=null) {
+                customerReference.add(st);
+            }
+        }
+        
+        public void addUltimateDeptor(String st)
+        {
+            if(st != null){
+                ultimateDeptor.add(st);
+            }
+        }
+        
+        public void addUltimateCreditor(String st)
+        {
+            if(st != null){
+                ultimateCreditor.add(st);
+            }
+        }
+        
+        public void addPurposeCode(String st)
+        {
+            if(st != null){
+                purposeCode.add(st);
+            }
+        }
+        
+        public void addMandateReference(String st)
+        {
+            if(st != null){
+                mandateReference.add(st);
+            }
+        }
+        
+        public void addCreditorIdentifier(String st)
+        {
+            if(st != null){
+                creditorIdentifier.add(st);
+            }
+        }
+        
+        public void addOriginatorIdentification(String st)
+        {
+            if(st != null){
+                originatorIdentification.add(st);
+            }
+        }
+        
+        public void addCompensationAmount(String st)
+        {
+            if(st != null){
+                compensationAmount.add(st);
+            }
+        }
+        
+        public void addOriginalAmount(String st)
+        {
+            if(st != null){
+                originalAmount.add(st);
+            }
+        }
+        // -- Anderung PROCILON
 
         public String toString()
         {
@@ -509,11 +616,11 @@ public class GVRKUms
                     // extract credit/debit
                     String cd;
                     if (st_ums.charAt(next)=='C' || st_ums.charAt(next)=='D') {
-                    	line.isStorno=false;
+                        line.isStorno=false;
                         cd=st_ums.substring(next,next+1);
                         next++;
                     } else {
-                    	line.isStorno=true;
+                        line.isStorno=true;
                         cd=st_ums.substring(next+1,next+2);
                         next+=2;
                     }
@@ -629,9 +736,24 @@ public class GVRKUms
                             line.isSepa = line.gvcode.startsWith("1");
                             line.text=Swift.getMultiTagValue(st_multi,"00");
                             line.primanota=Swift.getMultiTagValue(st_multi,"10");
-                            for (int i=0;i<10;i++) {
-                                line.addUsage(Swift.getMultiTagValue(st_multi,Integer.toString(20+i)));
+                            
+                            // Aenderung PROCILON
+                            // for (int i=0;i<10;i++) {
+                            // line.addUsage(Swift.getMultiTagValue(st_multi,Integer.toString(20+i)));
+                            // }
+                            
+                            List<String> multiTagValues = new ArrayList<String>();
+                            for (int i=0;i<10;i++)
+                            {
+                                 String multiTagValue = Swift.getMultiTagValue(st_multi,Integer.toString(20+i));
+                                 if(multiTagValue != null)
+                                 {
+                                     multiTagValues.add(multiTagValue);
+                                 }
                             }
+                            
+                            // wird weiter unten geparst, da zeilenuebergreifend z.B. ?29 und ?60 (siehe Bsp. Deutsche Bank)
+                            // -- Aenderung PROCILON
 
                             Konto acc=new Konto();
                             acc.blz=Swift.getMultiTagValue(st_multi,"30");
@@ -672,9 +794,23 @@ public class GVRKUms
                             }
 
                             line.addkey=Swift.getMultiTagValue(st_multi,"34");
-                            for (int i=0;i<4;i++) {
-                                line.addUsage(Swift.getMultiTagValue(st_multi,Integer.toString(60+i)));
+                            
+                            // Aenderung PROCILON
+                            // for (int i=0;i<4;i++) {
+                            // line.addUsage(Swift.getMultiTagValue(st_multi,Integer.toString(60+i)));
+                            // }
+                            
+                            for (int i = 0; i < 4; i++)
+                            {
+                                String multiTagValue = Swift.getMultiTagValue(st_multi, Integer.toString(60 + i));
+                                if (multiTagValue != null)
+                                {
+                                    multiTagValues.add(multiTagValue);
+                                }
                             }
+                            
+                            line = parseMultiTagValues(multiTagValues, line);
+                            // -- Aenderung PROCILON
                         } else {
                             line.additional=st_multi;
                         }
@@ -731,11 +867,11 @@ public class GVRKUms
                     UmsLine lastLine = btag.lines.get(numLines-1);
                     saldo = btag.end.value.getLongValue();
                     if(lastLine.saldo.value.getLongValue() != saldo) {
-                    	for(int i=numLines-1; i>=0; i--) {
-                    		lastLine = btag.lines.get(i);
-                    		lastLine.saldo.value = new Value(saldo, btag.end.value.getCurr());
-                    		saldo -= lastLine.value.getLongValue();
-                    	}
+                        for(int i=numLines-1; i>=0; i--) {
+                            lastLine = btag.lines.get(i);
+                            lastLine.saldo.value = new Value(saldo, btag.end.value.getCurr());
+                            saldo -= lastLine.value.getLongValue();
+                        }
                     }
                 }
 
@@ -754,4 +890,145 @@ public class GVRKUms
             rest.append(buffer.toString());
         }
     }
+    
+    // Aenderung PROCILON
+    private UmsLine parseMultiTagValues(List<String> multiTagValues, UmsLine line)
+    {
+        SubfieldType subfieldType = SubfieldType.TRANSACTION_DETAILS;
+        final int INDEX = 5;
+        
+        for(int i=0; i<multiTagValues.size(); i++)
+        {
+            String multiTagValue = multiTagValues.get(i);
+            if(multiTagValue != null)
+            {
+                if(multiTagValue.startsWith(SubfieldType.END2END_REFERENCE.getName()))
+                    subfieldType = SubfieldType.END2END_REFERENCE;
+                else if(multiTagValue.startsWith(SubfieldType.CUSTOMER_REFERENCE.getName()))
+                    subfieldType = SubfieldType.CUSTOMER_REFERENCE;
+                else if(multiTagValue.startsWith(SubfieldType.MANDATE_REFERENCE.getName()))
+                    subfieldType=SubfieldType.MANDATE_REFERENCE;
+                else if(multiTagValue.startsWith(SubfieldType.CREDITOR_IDENTIFIER.getName()))
+                    subfieldType=SubfieldType.CREDITOR_IDENTIFIER;
+                else if(multiTagValue.startsWith(SubfieldType.ORIGINATORS_IDENTIFICATION.getName()))
+                    subfieldType=SubfieldType.ORIGINATORS_IDENTIFICATION;
+                else if(multiTagValue.startsWith(SubfieldType.COMPENSATION_AMOUNT.getName()))
+                    subfieldType=SubfieldType.COMPENSATION_AMOUNT;
+                else if(multiTagValue.startsWith(SubfieldType.ORIGINAL_AMOUNT.getName()))
+                    subfieldType=SubfieldType.ORIGINAL_AMOUNT;
+                else if(multiTagValue.startsWith(SubfieldType.PURPOSE_CODE.getName()))
+                    subfieldType = SubfieldType.PURPOSE_CODE;
+                else if(multiTagValue.startsWith(SubfieldType.TRANSACTION_DETAILS.getName()))
+                    subfieldType = SubfieldType.TRANSACTION_DETAILS;
+                else if(multiTagValue.startsWith(SubfieldType.ULTIMATE_DEPTOR.getName()))
+                    subfieldType = SubfieldType.ULTIMATE_DEPTOR;
+                else if(multiTagValue.startsWith(SubfieldType.ULTIMATE_CREDITOR.getName()))
+                    subfieldType = SubfieldType.ULTIMATE_CREDITOR;
+                
+                switch (subfieldType) {
+                
+                case TRANSACTION_DETAILS:
+                    if(multiTagValue.startsWith(SubfieldType.TRANSACTION_DETAILS.getName()))
+                        line.addUsage(multiTagValue.substring(INDEX));
+                    else
+                        line.addUsage(multiTagValue);
+                    break;
+                    
+                case END2END_REFERENCE:
+                    if(multiTagValue.startsWith(SubfieldType.END2END_REFERENCE.getName()))
+                        line.addE2EValue(multiTagValue.substring(INDEX));
+                    else
+                        line.addE2EValue(multiTagValue);
+                    break;
+                    
+                case CUSTOMER_REFERENCE:
+                    if(multiTagValue.startsWith(SubfieldType.CUSTOMER_REFERENCE.getName()))
+                        line.addCustomerReference(multiTagValue.substring(INDEX));
+                    else
+                        line.addCustomerReference(multiTagValue);
+                    break;
+                    
+                case PURPOSE_CODE:
+                    if(multiTagValue.startsWith(SubfieldType.PURPOSE_CODE.getName()))
+                        line.addCustomerReference(multiTagValue.substring(INDEX));
+                    else
+                        line.addCustomerReference(multiTagValue);
+                    break;
+                    
+                case MANDATE_REFERENCE:
+                    if(multiTagValue.startsWith(SubfieldType.MANDATE_REFERENCE.getName()))
+                        line.addMandateReference(multiTagValue.substring(INDEX));
+                    else
+                        line.addMandateReference(multiTagValue);
+                    break;
+                    
+                case CREDITOR_IDENTIFIER:
+                    if(multiTagValue.startsWith(SubfieldType.CREDITOR_IDENTIFIER.getName()))
+                        line.addCreditorIdentifier(multiTagValue.substring(INDEX));
+                    else
+                        line.addCreditorIdentifier(multiTagValue);
+                    break;
+                    
+                case ORIGINATORS_IDENTIFICATION:
+                    if(multiTagValue.startsWith(SubfieldType.ORIGINATORS_IDENTIFICATION.getName()))
+                        line.addOriginatorIdentification(multiTagValue.substring(INDEX));
+                    else
+                        line.addOriginatorIdentification(multiTagValue);
+                    break;
+                    
+                case COMPENSATION_AMOUNT:
+                    if(multiTagValue.startsWith(SubfieldType.COMPENSATION_AMOUNT.getName()))
+                        line.addCompensationAmount(multiTagValue.substring(INDEX));
+                    else
+                        line.addCompensationAmount(multiTagValue);
+                    break;
+                    
+                case ORIGINAL_AMOUNT:
+                    if(multiTagValue.startsWith(SubfieldType.ORIGINAL_AMOUNT.getName()))
+                        line.addOriginalAmount(multiTagValue.substring(INDEX));
+                    else
+                        line.addOriginalAmount(multiTagValue);
+                    break;
+                    
+                case ULTIMATE_DEPTOR:
+                    if(multiTagValue.startsWith(SubfieldType.ULTIMATE_DEPTOR.getName()))
+                        line.addUltimateDeptor(multiTagValue.substring(INDEX));
+                    else
+                        line.addUltimateDeptor(multiTagValue);
+                    break;
+                            
+                case ULTIMATE_CREDITOR:
+                    if(multiTagValue.startsWith(SubfieldType.ULTIMATE_CREDITOR.getName()))
+                        line.addUltimateCreditor(multiTagValue.substring(INDEX));
+                    else
+                        line.addUltimateCreditor(multiTagValue);
+                    break;
+                    
+                default:
+                    // ignore
+                    break;
+                }
+            }
+        }
+        
+        return line;
+    }
+    
+    private enum SubfieldType{
+        END2END_REFERENCE("EREF+"), CUSTOMER_REFERENCE("KREF+"), PURPOSE_CODE("ZVKK+"), TRANSACTION_DETAILS("SVWZ+"), ULTIMATE_DEPTOR("ABWA+"), ULTIMATE_CREDITOR("ABWE+"), 
+        MANDATE_REFERENCE("MREF+"), CREDITOR_IDENTIFIER("CRED+"), ORIGINATORS_IDENTIFICATION("DEBT+"), COMPENSATION_AMOUNT("COAM+"), ORIGINAL_AMOUNT("OAMT+");
+        
+        private String name;
+        
+        private SubfieldType(String name)
+        {
+            this.name = name;
+        }
+        
+        public String getName()
+        {
+            return this.name;
+        }
+    }
+    // -- Aenderung PROCILON
 }
